@@ -1,14 +1,14 @@
-# SwipSwapMe Plugin for the Wii U Plugin System
+# SwipSwapMe Plugin for the Wii U Plugin System [![Build Status](https://api.travis-ci.org/Maschell/SwipSwapMe.svg?branch=master)](https://travis-ci.org/Maschell/SwipSwapMe)
 
 This little app can be used to swap the TV and DRC screen.
 
 # Wii U Plugin System
-This is a plugin for the [Wii U Plugin System (WUPS)](https://github.com/Maschell/WiiUPluginSystem/). To be able to use this plugin you have to place the resulting `.mod` file in to the following folder:
+This is a plugin for the [Wii U Plugin System (WUPS)](https://github.com/Maschell/WiiUPluginSystem/). To be able to use this plugin you have to place the resulting `.mod` file into the following folder:
 
 ```
 sd:/wiiu/plugins
 ```
-When the file is placed on the SDCard you can load it with [Wii U Plugin System (WUPS)](plugin loader).
+When the file is placed on the SDCard you can load it with [plugin loader](https://github.com/Maschell/WiiUPluginSystem/).
 
 # Usage
 
