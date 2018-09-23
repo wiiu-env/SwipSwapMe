@@ -25,3 +25,17 @@ For building you need:
 - [libutilswut](https://github.com/Maschell/libutils/tree/wut) (WUT version) for common functions.
 
 Install them (in this order) according to their README's. Don't forget the dependencies of the libs itself.
+
+### Building using the Dockerfile
+It's possible to use a docker image for building. This way you don't need anything installed on your host system.
+
+```
+# Build docker image (only needed once
+docker build . -t swipswapme-builder
+
+# make 
+docker run -it --rm -v ${PWD}:/project swipswapme-builder make
+
+# make clean
+docker run -it --rm -v ${PWD}:/project swipswapme-builder make clean
+```
