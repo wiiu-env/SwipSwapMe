@@ -68,6 +68,13 @@ INITIALIZE_PLUGIN() {
     deinitLogging();
 }
 
+DEINITIALIZE_PLUGIN() {
+    if (gNotificationModuleInitDone) {
+        NotificationModule_DeInitLibrary();
+        gNotificationModuleInitDone = false;
+    }
+}
+
 // Called whenever an application was started.
 ON_APPLICATION_START() {
     initLogging();
@@ -88,11 +95,4 @@ ON_APPLICATION_REQUESTS_EXIT() {
         }
     }
     deinitLogging();
-}
-
-ON_APPLICATION_ENDS() {
-    if (gNotificationModuleInitDone) {
-        NotificationModule_DeInitLibrary();
-        gNotificationModuleInitDone = false;
-    }
 }
