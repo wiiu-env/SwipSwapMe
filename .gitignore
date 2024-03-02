@@ -5,3 +5,4 @@ cmake-build-debug/
 *.wps
 *.elf
 CMakeLists.txt
+*.zip
