@@ -34,6 +34,19 @@ WUPS_USE_WUT_DEVOPTAB();
 
 WUPS_USE_STORAGE("SwipSwapMeAroma");
 
+void migrateStorage() {
+    uint32_t doSwap = false;
+    if (WUPSStorageAPI_GetU32(nullptr, SWAP_SCREENS_CONFIG_STRING_DEPRECATED, &doSwap) == WUPS_STORAGE_ERROR_SUCCESS) {
+        DEBUG_FUNCTION_LINE_INFO("Found deprecated config in storage. Storage will be migrated");
+        if (doSwap) {
+            gCurScreenMode = SCREEN_MODE_SWAP;
+        }
+        if (WUPSStorageAPI_DeleteItem(nullptr, SWAP_SCREENS_CONFIG_STRING_DEPRECATED) != WUPS_STORAGE_ERROR_SUCCESS) {
+            DEBUG_FUNCTION_LINE_WARN("Failed to delete deprecated value: \"%s\" from storage", SWAP_SCREENS_CONFIG_STRING_DEPRECATED);
+        }
+    }
+}
+
 // Gets called once the loader exists.
 INITIALIZE_PLUGIN() {
     initLogging();
@@ -45,12 +58,15 @@ INITIALIZE_PLUGIN() {
         DEBUG_FUNCTION_LINE_ERR("Failed to init notification lib");
     }
 
+    gCurScreenMode = DEFAULT_SCREEN_MODE_CONFIG_VALUE; // migrateStorage might override this
+    migrateStorage();
+
     WUPSStorageError err;
     if ((err = WUPSStorageAPI::GetOrStoreDefault(ENABLED_CONFIG_STRING, gEnabled, DEFAULT_ENABLED_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
         DEBUG_FUNCTION_LINE_ERR("Failed to get or create item \"%s\": %s (%d)", ENABLED_CONFIG_STRING, WUPSStorageAPI_GetStatusStr(err), err);
     }
-    if ((err = WUPSStorageAPI::GetOrStoreDefault(SWAP_SCREENS_CONFIG_STRING, gDoScreenSwap, DEFAULT_SWAP_SCREENS_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
-        DEBUG_FUNCTION_LINE_ERR("Failed to get or create item \"%s\": %s (%d)", SWAP_SCREENS_CONFIG_STRING, WUPSStorageAPI_GetStatusStr(err), err);
+    if ((err = WUPSStorageAPI::GetOrStoreDefault(SCREEN_MODE_CONFIG_STRING, gCurScreenMode, gCurScreenMode)) != WUPS_STORAGE_ERROR_SUCCESS) {
+        DEBUG_FUNCTION_LINE_ERR("Failed to get or create item \"%s\": %s (%d)", SCREEN_MODE_CONFIG_STRING, WUPSStorageAPI_GetStatusStr(err), err);
     }
     if ((err = WUPSStorageAPI::GetOrStoreDefault(ENABLED_SWAP_SCREENS_COMBO_CONFIG_STRING, gSwapScreenButtonComboEnabled, DEFAULT_ENABLED_SWAP_SCREENS_COMBO_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
         DEBUG_FUNCTION_LINE_ERR("Failed to get or create item \"%s\": %s (%d)", ENABLED_SWAP_SCREENS_COMBO_CONFIG_STRING, WUPSStorageAPI_GetStatusStr(err), err);
@@ -91,24 +107,25 @@ DEINITIALIZE_PLUGIN() {
     }
 }
 
-SwipSwapAudioMode sAudioModeAtStart;
-bool sDoSwapAtStart;
+static SwipSwapAudioMode sAudioModeAtStart;
+static SwipSwapScreenMode sScreenModeAtStart;
 
 // Called whenever an application was started.
 ON_APPLICATION_START() {
     initLogging();
-    sAudioModeAtStart = gCurAudioMode;
-    sDoSwapAtStart    = gDoScreenSwap;
+
+    sAudioModeAtStart  = gCurAudioMode;
+    sScreenModeAtStart = gCurScreenMode;
 }
 
 ON_APPLICATION_REQUESTS_EXIT() {
-    if (sAudioModeAtStart != gCurAudioMode || sDoSwapAtStart != gDoScreenSwap) {
+    if (sAudioModeAtStart != gCurAudioMode || sScreenModeAtStart != gCurScreenMode) {
         WUPSStorageError err;
         if ((err = WUPSStorageAPI::Store(AUDIO_MODE_CONFIG_STRING, gCurAudioMode)) != WUPS_STORAGE_ERROR_SUCCESS) {
             DEBUG_FUNCTION_LINE_ERR("Failed to store audio mode to storage: %s (%d)", WUPSStorageAPI_GetStatusStr(err), err);
         }
 
-        if ((err = WUPSStorageAPI::Store(SWAP_SCREENS_CONFIG_STRING, gDoScreenSwap)) != WUPS_STORAGE_ERROR_SUCCESS) {
+        if ((err = WUPSStorageAPI::Store(SCREEN_MODE_CONFIG_STRING, gCurScreenMode)) != WUPS_STORAGE_ERROR_SUCCESS) {
             DEBUG_FUNCTION_LINE_ERR("Failed to store screen mode to storage: %s (%d)", WUPSStorageAPI_GetStatusStr(err), err);
         }
         if ((err = WUPSStorageAPI::SaveStorage()) != WUPS_STORAGE_ERROR_SUCCESS) {
