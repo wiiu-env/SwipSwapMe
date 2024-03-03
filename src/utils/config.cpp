@@ -6,54 +6,73 @@
 
 extern void UpdateAudioMode();
 
-void boolItemChangedConfig(ConfigItemBoolean *item, bool newValue) {
+static void boolItemChangedConfig(ConfigItemBoolean *item, bool newValue) {
+    if (!item || !item->identifier) {
+        DEBUG_FUNCTION_LINE_WARN("Invalid item or identifier in bool item callback");
+        return;
+    }
+    DEBUG_FUNCTION_LINE_VERBOSE("New value in %s changed: %d", item->identifier, newValue);
     if (std::string_view(ENABLED_CONFIG_STRING) == item->identifier) {
-        DEBUG_FUNCTION_LINE("New value in %s: %d", ENABLED_CONFIG_STRING, newValue);
         gEnabled = newValue;
-        WUPSStorageAPI::Store(ENABLED_CONFIG_STRING, gEnabled);
         UpdateAudioMode();
+    } else if (std::string_view(SWAP_SCREENS_CONFIG_STRING) == item->identifier) {
+        gDoScreenSwap = newValue;
+    } else if (std::string_view(ENABLED_SWAP_SCREENS_COMBO_CONFIG_STRING) == item->identifier) {
+        gSwapScreenButtonComboEnabled = newValue;
+    } else if (std::string_view(ENABLED_CHANGE_AUDIO_COMBO_CONFIG_STRING) == item->identifier) {
+        gChangeAudioModeButtonComboEnabled = newValue;
+    } else if (std::string_view(ENABLE_NOTIFICATIONS_CONFIG_STRING) == item->identifier) {
+        gShowNotifications = newValue;
+    } else {
+        DEBUG_FUNCTION_LINE_WARN("Unexpected boolean item: %s", item->identifier);
+        return;
+    }
+    WUPSStorageError err;
+    if ((err = WUPSStorageAPI::Store(item->identifier, newValue)) != WUPS_STORAGE_ERROR_SUCCESS) {
+        DEBUG_FUNCTION_LINE_WARN("Failed to store value %d to storage item \"%s\": %s (%d)", newValue, item->identifier, WUPSStorageAPI_GetStatusStr(err), err);
+    }
+}
+
+static void buttonComboItemChanged(ConfigItemButtonCombo *item, uint32_t newValue) {
+    if (!item || !item->identifier) {
+        DEBUG_FUNCTION_LINE_WARN("Invalid item or identifier in button combo item callback");
+        return;
+    }
+    DEBUG_FUNCTION_LINE_VERBOSE("New value in %s changed: %d", item->identifier, newValue);
+    if (std::string_view(SWAP_SCREEN_BUTTON_COMBO_CONFIG_STRING) == item->identifier) {
+        gSwapScreenButtonCombo = newValue;
+    } else if (std::string_view(CHANGE_AUDIO_BUTTON_COMBO_CONFIG_STRING) == item->identifier) {
+        gSwapAudioButtonCombo = newValue;
+    } else {
+        DEBUG_FUNCTION_LINE_WARN("Unexpected button combo item: %s", item->identifier);
         return;
     }
 
-    if (std::string_view(SWAP_SCREENS_CONFIG_STRING) == item->identifier) {
-        gDoScreenSwap = newValue;
-        WUPSStorageAPI::Store(item->identifier, gDoScreenSwap);
-    } else if (std::string_view(ENABLED_SWAP_SCREENS_COMBO_CONFIG_STRING) == item->identifier) {
-        gSwapScreenButtonComboEnabled = newValue;
-        WUPSStorageAPI::Store(item->identifier, gSwapScreenButtonComboEnabled);
-    } else if (std::string_view(ENABLED_CHANGE_AUDIO_COMBO_CONFIG_STRING) == item->identifier) {
-        gChangeAudioModeButtonComboEnabled = newValue;
-        WUPSStorageAPI::Store(item->identifier, gChangeAudioModeButtonComboEnabled);
-    } else if (std::string_view(ENABLE_NOTIFICATIONS_CONFIG_STRING) == item->identifier) {
-        gShowNotifications = newValue;
-        WUPSStorageAPI::Store(item->identifier, gShowNotifications);
-    } else {
-        DEBUG_FUNCTION_LINE_ERR("Unexpected boolean item: %s", item->identifier);
+    WUPSStorageError err;
+    if ((err = WUPSStorageAPI::Store(item->identifier, newValue)) != WUPS_STORAGE_ERROR_SUCCESS) {
+        DEBUG_FUNCTION_LINE_WARN("Failed to store value %d to storage item \"%s\": %s (%d)", newValue, item->identifier, WUPSStorageAPI_GetStatusStr(err), err);
     }
 }
 
-void buttonComboItemChanged(ConfigItemButtonCombo *item, uint32_t newValue) {
-    if (item && item->identifier) {
-        if (std::string_view(SWAP_SCREEN_BUTTON_COMBO_CONFIG_STRING) == item->identifier) {
-            gSwapScreenButtonCombo = newValue;
-            WUPSStorageAPI::Store(item->identifier, (int32_t) gSwapScreenButtonCombo);
-        } else if (std::string_view(CHANGE_AUDIO_BUTTON_COMBO_CONFIG_STRING) == item->identifier) {
-            gSwapAudioButtonCombo = newValue;
-            WUPSStorageAPI::Store(item->identifier, (int32_t) gSwapAudioButtonCombo);
-        }
+static void multiItemChanged(ConfigItemMultipleValues *item, uint32_t newValue) {
+    if (!item || !item->identifier) {
+        DEBUG_FUNCTION_LINE_WARN("Invalid item or identifier in multi item callback");
+        return;
     }
-}
-
-
-void default_audio_mode_changed(ConfigItemMultipleValues *item, uint32_t newValue) {
-    DEBUG_FUNCTION_LINE("New value in %s changed: %d", item->identifier, newValue);
+    DEBUG_FUNCTION_LINE_VERBOSE("New value in %s changed: %d", item->identifier, newValue);
 
     if (std::string_view(AUDIO_MODE_CONFIG_STRING) == item->identifier) {
         gCurAudioMode = static_cast<SwipSwapAudioMode>(newValue);
-        WUPSStorageAPI::Store(item->identifier, (int32_t) gCurAudioMode);
+    } else {
+        DEBUG_FUNCTION_LINE_WARN("Unexpected button combo item: %s", item->identifier);
+        return;
+    }
+
+    WUPSStorageError err;
+    if ((err = WUPSStorageAPI::Store(item->identifier, newValue)) != WUPS_STORAGE_ERROR_SUCCESS) {
+        DEBUG_FUNCTION_LINE_WARN("Failed to store value %d to storage item \"%s\": %s (%d)", newValue, item->identifier, WUPSStorageAPI_GetStatusStr(err), err);
     }
 }
-
 
 WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle rootHandle) {
     try {
@@ -83,7 +102,7 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
                                                                "Audio mode:",
                                                                DEFAULT_AUDIO_MODE_CONFIG_VALUE, gCurAudioMode,
                                                                audioModeMap,
-                                                               &default_audio_mode_changed));
+                                                               &multiItemChanged));
 
         auto buttonCombos = WUPSConfigCategory::Create("Button Combos");
 
@@ -117,7 +136,8 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
 
 void ConfigMenuClosedCallback() {
     // Save all changes
-    if (WUPSStorageAPI::SaveStorage() != WUPS_STORAGE_ERROR_SUCCESS) {
-        DEBUG_FUNCTION_LINE_ERR("Failed to close storage");
+    WUPSStorageError err;
+    if ((err = WUPSStorageAPI::SaveStorage()) != WUPS_STORAGE_ERROR_SUCCESS) {
+        DEBUG_FUNCTION_LINE_ERR("Failed to close storage: %s (%d)", WUPSStorageAPI_GetStatusStr(err), err);
     }
 }
