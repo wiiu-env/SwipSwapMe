@@ -59,21 +59,18 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
     try {
         WUPSConfigCategory root = WUPSConfigCategory(rootHandle);
 
-        auto settings = WUPSConfigCategory::Create("Settings");
-
-
-        settings.add(WUPSConfigItemBoolean::Create(ENABLED_CONFIG_STRING,
-                                                   "Plugin enabled",
-                                                   DEFAULT_ENABLED_CONFIG_VALUE, gEnabled,
-                                                   &boolItemChangedConfig));
-        settings.add(WUPSConfigItemBoolean::Create(ENABLE_NOTIFICATIONS_CONFIG_STRING,
-                                                   "Show notifications",
-                                                   DEFAULT_ENABLE_NOTIFICATIONS_CONFIG_VALUE, gShowNotifications,
-                                                   &boolItemChangedConfig));
-        settings.add(WUPSConfigItemBoolean::Create(SWAP_SCREENS_CONFIG_STRING,
-                                                   "Swap screens",
-                                                   DEFAULT_SWAP_SCREENS_CONFIG_VALUE, gDoScreenSwap,
-                                                   &boolItemChangedConfig));
+        root.add(WUPSConfigItemBoolean::Create(ENABLED_CONFIG_STRING,
+                                               "Plugin enabled",
+                                               DEFAULT_ENABLED_CONFIG_VALUE, gEnabled,
+                                               &boolItemChangedConfig));
+        root.add(WUPSConfigItemBoolean::Create(ENABLE_NOTIFICATIONS_CONFIG_STRING,
+                                               "Show notifications",
+                                               DEFAULT_ENABLE_NOTIFICATIONS_CONFIG_VALUE, gShowNotifications,
+                                               &boolItemChangedConfig));
+        root.add(WUPSConfigItemBoolean::Create(SWAP_SCREENS_CONFIG_STRING,
+                                               "Swap screens",
+                                               DEFAULT_SWAP_SCREENS_CONFIG_VALUE, gDoScreenSwap,
+                                               &boolItemChangedConfig));
 
         constexpr WUPSConfigItemMultipleValues::ValuePair audioModeMap[] = {
                 {AUDIO_MODE_NONE, "Normal"},
@@ -82,13 +79,11 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
                 {AUDIO_MODE_COMBINE, "Combine TV and GamePad sound"},
                 {AUDIO_MODE_LEFT_TV_RIGHT_DRC, "Left: TV; Right: GamePad"}};
 
-        settings.add(WUPSConfigItemMultipleValues::CreateFromValue(AUDIO_MODE_CONFIG_STRING,
-                                                                   "Audio mode:",
-                                                                   DEFAULT_AUDIO_MODE_CONFIG_VALUE, gCurAudioMode,
-                                                                   audioModeMap,
-                                                                   &default_audio_mode_changed));
-
-        root.add(std::move(settings));
+        root.add(WUPSConfigItemMultipleValues::CreateFromValue(AUDIO_MODE_CONFIG_STRING,
+                                                               "Audio mode:",
+                                                               DEFAULT_AUDIO_MODE_CONFIG_VALUE, gCurAudioMode,
+                                                               audioModeMap,
+                                                               &default_audio_mode_changed));
 
         auto buttonCombos = WUPSConfigCategory::Create("Button Combos");
 
@@ -113,7 +108,7 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
                                                            &buttonComboItemChanged));
         root.add(std::move(buttonCombos));
     } catch (std::exception &e) {
-        OSReport("Exception T_T : %s\n", e.what());
+        OSReport("Exception: %s\n", e.what());
         return WUPSCONFIG_API_CALLBACK_RESULT_ERROR;
     }
 
