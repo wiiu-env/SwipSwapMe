@@ -89,20 +89,28 @@ DEINITIALIZE_PLUGIN() {
     }
 }
 
+SwipSwapAudioMode sAudioModeAtStart;
+bool sDoSwapAtStart;
+
 // Called whenever an application was started.
 ON_APPLICATION_START() {
     initLogging();
+    sAudioModeAtStart = gCurAudioMode;
+    sDoSwapAtStart    = gDoScreenSwap;
 }
 
 ON_APPLICATION_REQUESTS_EXIT() {
-    if (WUPSStorageAPI::Store(AUDIO_MODE_CONFIG_STRING, gCurAudioMode) != WUPS_STORAGE_ERROR_SUCCESS) {
-        DEBUG_FUNCTION_LINE_ERR("Failed to store screen mode to storage");
-    }
-    if (WUPSStorageAPI::Store(SWAP_SCREENS_CONFIG_STRING, gDoScreenSwap) != WUPS_STORAGE_ERROR_SUCCESS) {
-        DEBUG_FUNCTION_LINE_ERR("Failed to store screen mode to storage");
-    }
-    if (WUPSStorageAPI::SaveStorage() != WUPS_STORAGE_ERROR_SUCCESS) {
-        DEBUG_FUNCTION_LINE_ERR("Failed to save storage");
+    if (sAudioModeAtStart != gCurAudioMode || sDoSwapAtStart != gDoScreenSwap) {
+        if (WUPSStorageAPI::Store(AUDIO_MODE_CONFIG_STRING, gCurAudioMode) != WUPS_STORAGE_ERROR_SUCCESS) {
+            DEBUG_FUNCTION_LINE_ERR("Failed to store screen mode to storage");
+        }
+
+        if (WUPSStorageAPI::Store(SWAP_SCREENS_CONFIG_STRING, gDoScreenSwap) != WUPS_STORAGE_ERROR_SUCCESS) {
+            DEBUG_FUNCTION_LINE_ERR("Failed to store screen mode to storage");
+        }
+        if (WUPSStorageAPI::SaveStorage() != WUPS_STORAGE_ERROR_SUCCESS) {
+            DEBUG_FUNCTION_LINE_ERR("Failed to save storage");
+        }
     }
 
     deinitLogging();
