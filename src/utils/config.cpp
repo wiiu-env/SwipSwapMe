@@ -15,8 +15,6 @@ static void boolItemChangedConfig(ConfigItemBoolean *item, bool newValue) {
     if (std::string_view(ENABLED_CONFIG_STRING) == item->identifier) {
         gEnabled = newValue;
         UpdateAudioMode();
-    } else if (std::string_view(SWAP_SCREENS_CONFIG_STRING) == item->identifier) {
-        gDoScreenSwap = newValue;
     } else if (std::string_view(ENABLED_SWAP_SCREENS_COMBO_CONFIG_STRING) == item->identifier) {
         gSwapScreenButtonComboEnabled = newValue;
     } else if (std::string_view(ENABLED_CHANGE_AUDIO_COMBO_CONFIG_STRING) == item->identifier) {
@@ -63,6 +61,8 @@ static void multiItemChanged(ConfigItemMultipleValues *item, uint32_t newValue) 
 
     if (std::string_view(AUDIO_MODE_CONFIG_STRING) == item->identifier) {
         gCurAudioMode = static_cast<SwipSwapAudioMode>(newValue);
+    } else if (std::string_view(SCREEN_MODE_CONFIG_STRING) == item->identifier) {
+        gCurScreenMode = static_cast<SwipSwapScreenMode>(newValue);
     } else {
         DEBUG_FUNCTION_LINE_WARN("Unexpected button combo item: %s", item->identifier);
         return;
@@ -86,10 +86,20 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
                                                "Show notifications",
                                                DEFAULT_ENABLE_NOTIFICATIONS_CONFIG_VALUE, gShowNotifications,
                                                &boolItemChangedConfig));
-        root.add(WUPSConfigItemBoolean::Create(SWAP_SCREENS_CONFIG_STRING,
-                                               "Swap screens",
-                                               DEFAULT_SWAP_SCREENS_CONFIG_VALUE, gDoScreenSwap,
-                                               &boolItemChangedConfig));
+
+
+        constexpr WUPSConfigItemMultipleValues::ValuePair screenModeMap[] = {
+                {SCREEN_MODE_NONE, "None"},
+                {SCREEN_MODE_SWAP, "Swap TV and GamePad"},
+                {SCREEN_MODE_MIRROR_TV, "Mirror TV"},
+                {SCREEN_MODE_MIRROR_DRC, "Mirror DRC"},
+        };
+
+        root.add(WUPSConfigItemMultipleValues::CreateFromValue(SCREEN_MODE_CONFIG_STRING,
+                                                               "Screen mode:",
+                                                               DEFAULT_SCREEN_MODE_CONFIG_VALUE, gCurScreenMode,
+                                                               screenModeMap,
+                                                               &multiItemChanged));
 
         constexpr WUPSConfigItemMultipleValues::ValuePair audioModeMap[] = {
                 {AUDIO_MODE_NONE, "Normal"},
