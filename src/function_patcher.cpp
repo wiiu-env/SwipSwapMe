@@ -92,14 +92,14 @@ DECL_FUNCTION(int32_t, VPADRead, VPADChan chan, VPADStatus *buffer, uint32_t buf
             bool checkFullBuffer = VPADGetButtonProcMode(chan) == 1;
 
             if (gChangeAudioModeButtonComboEnabled && checkButtonComboVPAD(buffer,
-                                                                           checkFullBuffer ? buffer_size : 1,
+                                                                           checkFullBuffer ? result : 1,
                                                                            gSwapAudioButtonCombo,
                                                                            sSwapVoicesWasHoldForXFrameGamePad)) {
                 SwapVoices();
             }
 
             if (gSwapScreenButtonComboEnabled && checkButtonComboVPAD(buffer,
-                                                                      checkFullBuffer ? buffer_size : 1,
+                                                                      checkFullBuffer ? result : 1,
                                                                       gSwapScreenButtonCombo,
                                                                       sSwapScreenWasHoldForXFrameGamePad)) {
                 SwapScreens();
