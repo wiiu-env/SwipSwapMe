@@ -80,8 +80,8 @@ void SwapScreens() {
 void SwapVoices();
 extern "C" uint32_t VPADGetButtonProcMode(VPADChan chan);
 
-static uint32_t sSwapScreenWasHoldForXFrameGamePad;
-static uint32_t sSwapVoicesWasHoldForXFrameGamePad;
+static uint32_t sSwapScreenWasHoldForXFrameGamePad = 0;
+static uint32_t sSwapVoicesWasHoldForXFrameGamePad = 0;
 DECL_FUNCTION(int32_t, VPADRead, VPADChan chan, VPADStatus *buffer, uint32_t buffer_size, VPADReadError *error) {
     VPADReadError real_error;
     int32_t result = real_VPADRead(chan, buffer, buffer_size, &real_error);
