@@ -29,12 +29,36 @@
 void UpdateAudioMode();
 
 DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, GX2ScanTarget scan_target) {
-    if (gEnabled && gDoScreenSwap) {
-        if (scan_target == GX2_SCAN_TARGET_TV) {
-            scan_target = GX2_SCAN_TARGET_DRC;
-        } else if (scan_target == GX2_SCAN_TARGET_DRC) {
-            scan_target = GX2_SCAN_TARGET_TV;
+    if (gEnabled && gCurScreenMode != SCREEN_MODE_NONE) {
+        switch (gCurScreenMode) {
+            case SCREEN_MODE_SWAP: {
+                if (scan_target == GX2_SCAN_TARGET_TV) {
+                    scan_target = GX2_SCAN_TARGET_DRC;
+                } else if (scan_target == GX2_SCAN_TARGET_DRC) {
+                    scan_target = GX2_SCAN_TARGET_TV;
+                }
+                break;
+            }
+            case SCREEN_MODE_MIRROR_TV: {
+                if (scan_target == GX2_SCAN_TARGET_TV) {
+                    scan_target = GX2_SCAN_TARGET_TV | GX2_SCAN_TARGET_DRC;
+                } else if (scan_target == GX2_SCAN_TARGET_DRC) {
+                    return;
+                }
+                break;
+            }
+            case SCREEN_MODE_MIRROR_DRC: {
+                if (scan_target == GX2_SCAN_TARGET_DRC) {
+                    scan_target = GX2_SCAN_TARGET_TV | GX2_SCAN_TARGET_DRC;
+                } else if (scan_target == GX2_SCAN_TARGET_TV) {
+                    return;
+                }
+                break;
+            }
+            default:
+                break;
         }
+
         if (colorBuffer->surface.aa != GX2_AA_MODE1X) {
             // If AA is enabled, we need to resolve the AA buffer.
             GX2Surface tempSurface;
@@ -66,10 +90,14 @@ DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer,
 }
 
 void SwapScreens() {
-    gDoScreenSwap = !gDoScreenSwap;
+    if (gCurScreenMode == SCREEN_MODE_SWAP) {
+        gCurScreenMode = SCREEN_MODE_NONE;
+    } else {
+        gCurScreenMode = SCREEN_MODE_SWAP;
+    }
 
     if (gShowNotifications && gNotificationModuleInitDone) {
-        if (gDoScreenSwap) {
+        if (gCurScreenMode) {
             NotificationModule_AddInfoNotification("Swapping TV and GamePad screen");
         } else {
             NotificationModule_AddInfoNotification("Stop swapping TV and GamePad screen");
@@ -188,9 +216,27 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
             otherFunc(addr, sizeCpy);
             return;
         case AUDIO_MODE_MATCH_SCREEN: {
-            if (gDoScreenSwap) {
-                otherFunc(addr, sizeCpy);
-                return;
+            switch (gCurScreenMode) {
+                case SCREEN_MODE_SWAP:
+                    otherFunc(addr, sizeCpy);
+                    return;
+                case SCREEN_MODE_MIRROR_TV:
+                case SCREEN_MODE_MIRROR_DRC: {
+                    if (isDRC) {
+                        memcpy(DRCCopy, addr, sizeCpy);
+                    } else {
+                        memcpy(TVCopy, addr, sizeCpy);
+                    }
+                    if (gCurScreenMode == SCREEN_MODE_MIRROR_TV) {
+                        memcpy(addr, TVCopy, sizeCpy);
+                    } else if (gCurScreenMode == SCREEN_MODE_MIRROR_DRC) {
+                        memcpy(addr, DRCCopy, sizeCpy);
+                    }
+                    break;
+                }
+                case SCREEN_MODE_NONE:
+                case SCREEN_MODE_MAX_VALUE:
+                    break;
             }
             break;
         }
