@@ -92,7 +92,7 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
                 {SCREEN_MODE_NONE, "Normal"},
                 {SCREEN_MODE_SWAP, "Swap TV and GamePad"},
                 {SCREEN_MODE_MIRROR_TV, "Mirror TV"},
-                {SCREEN_MODE_MIRROR_DRC, "Mirror DRC"},
+                {SCREEN_MODE_MIRROR_DRC, "Mirror GamePad"},
         };
 
         root.add(WUPSConfigItemMultipleValues::CreateFromValue(SCREEN_MODE_CONFIG_STRING,
