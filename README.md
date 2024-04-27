@@ -26,6 +26,8 @@ Via the plugin config menu (press L, DPAD Down and Minus on the GamePad, Pro Con
         - Displays notifications when swapping the screens or changing the audio mode.
     - Swap screens: (Default is false)
         - Swaps the TV and GamePad screen when set to true.
+    - Screen mode: (Default is "Normal")
+        - Sets the screen mode. See "Screen modes" for more details.
     - Audio mode: (Default is "Sound matches screen")
         - Sets the audio mode. See "Audio modes" for more details.
 - **Button combos**
@@ -52,6 +54,19 @@ SwipSwapme does not only allow you to swap the screen, it also offers multiple a
     - Outputs the TV and GamePad sound on both.
 - **Left: TV; Right: GamePad**
     - Outputs the TV sound on the left speaker, and the GamePad sound on the right speaker.
+
+#### Screen Modes
+
+SwipSwapme does not only allow you to swap the screen, it also offers multiple screen modes:
+
+- **Normal**
+    - The screen output is not touched at all.
+- **Swap TV and GamePad**
+    - Swaps the TV and GamePad screen.
+- **Mirror TV**
+    - Mirrors the TV screen onto the GamePad.
+- **Mirror GamePad**
+    - Mirrors the GamePad screen onto the TV.
 
 ## Building
 
