@@ -204,6 +204,7 @@ void SwapVoices() {
 }
 
 static uint32_t sSwapScreenWasHoldForXFrame[4];
+static uint32_t sChangeScreenWasHoldForXFrame[4];
 static uint32_t sSwapAudioWasHoldForXFrame[4];
 DECL_FUNCTION(void, WPADRead, WPADChan chan, WPADStatusProController *data) {
     real_WPADRead(chan, data);
@@ -226,6 +227,9 @@ DECL_FUNCTION(void, WPADRead, WPADChan chan, WPADStatusProController *data) {
                 }
                 if (gChangeAudioModeButtonComboEnabled && checkButtonComboWPAD(curButtonHold, gSwapAudioButtonCombo, sSwapAudioWasHoldForXFrame[chan])) {
                     SwapVoices();
+                }
+                if (gChangeScreenModeButtonComboEnabled && checkButtonComboWPAD(curButtonHold, gChangeScreenButtonCombo, sChangeScreenWasHoldForXFrame[chan])) {
+                    ChangeScreens();
                 }
             }
         }

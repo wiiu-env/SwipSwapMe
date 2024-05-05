@@ -74,7 +74,7 @@ INITIALIZE_PLUGIN() {
     if ((err = WUPSStorageAPI::GetOrStoreDefault(ENABLED_CHANGE_AUDIO_COMBO_CONFIG_STRING, gChangeAudioModeButtonComboEnabled, DEFAULT_ENABLED_CHANGE_AUDIO_COMBO_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
         DEBUG_FUNCTION_LINE_ERR("Failed to get or create item \"%s\": %s (%d)", ENABLED_CHANGE_AUDIO_COMBO_CONFIG_STRING, WUPSStorageAPI_GetStatusStr(err), err);
     }
-    if ((err = WUPSStorageAPI::GetOrStoreDefault(ENABLED_CHANGE_SCREEN_COMBO_CONFIG_STRING, gChangeAudioModeButtonComboEnabled, DEFAULT_ENABLED_CHANGE_SCREEN_COMBO_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
+    if ((err = WUPSStorageAPI::GetOrStoreDefault(ENABLED_CHANGE_SCREEN_COMBO_CONFIG_STRING, gChangeScreenModeButtonComboEnabled, DEFAULT_ENABLED_CHANGE_SCREEN_COMBO_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
         DEBUG_FUNCTION_LINE_ERR("Failed to get or create item \"%s\": %s (%d)", ENABLED_CHANGE_SCREEN_COMBO_CONFIG_STRING, WUPSStorageAPI_GetStatusStr(err), err);
     }
     if ((err = WUPSStorageAPI::GetOrStoreDefault(ENABLE_NOTIFICATIONS_CONFIG_STRING, gShowNotifications, DEFAULT_ENABLE_NOTIFICATIONS_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
@@ -86,7 +86,7 @@ INITIALIZE_PLUGIN() {
     if ((err = WUPSStorageAPI::GetOrStoreDefault(CHANGE_AUDIO_BUTTON_COMBO_CONFIG_STRING, gSwapAudioButtonCombo, (uint32_t) DEFAULT_CHANGE_AUDIO_BUTTON_COMBO_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
         DEBUG_FUNCTION_LINE_ERR("Failed to get or create item \"%s\": %s (%d)", CHANGE_AUDIO_BUTTON_COMBO_CONFIG_STRING, WUPSStorageAPI_GetStatusStr(err), err);
     }
-    if ((err = WUPSStorageAPI::GetOrStoreDefault(CHANGE_SCREEN_BUTTON_COMBO_CONFIG_STRING, gSwapAudioButtonCombo, (uint32_t) DEFAULT_CHANGE_SCREEN_BUTTON_COMBO_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
+    if ((err = WUPSStorageAPI::GetOrStoreDefault(CHANGE_SCREEN_BUTTON_COMBO_CONFIG_STRING, gChangeScreenButtonCombo, (uint32_t) DEFAULT_CHANGE_SCREEN_BUTTON_COMBO_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
         DEBUG_FUNCTION_LINE_ERR("Failed to get or create item \"%s\": %s (%d)", CHANGE_SCREEN_BUTTON_COMBO_CONFIG_STRING, WUPSStorageAPI_GetStatusStr(err), err);
     }
     if ((err = WUPSStorageAPI::GetOrStoreDefault(AUDIO_MODE_CONFIG_STRING, gCurAudioMode, DEFAULT_AUDIO_MODE_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
@@ -133,6 +133,7 @@ ON_APPLICATION_REQUESTS_EXIT() {
         if ((err = WUPSStorageAPI::Store(SCREEN_MODE_CONFIG_STRING, gCurScreenMode)) != WUPS_STORAGE_ERROR_SUCCESS) {
             DEBUG_FUNCTION_LINE_ERR("Failed to store screen mode to storage: %s (%d)", WUPSStorageAPI_GetStatusStr(err), err);
         }
+
         if ((err = WUPSStorageAPI::SaveStorage()) != WUPS_STORAGE_ERROR_SUCCESS) {
             DEBUG_FUNCTION_LINE_ERR("Failed to save storage: %s (%d)", WUPSStorageAPI_GetStatusStr(err), err);
         }
