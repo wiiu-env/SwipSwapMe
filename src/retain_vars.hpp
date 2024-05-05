@@ -21,8 +21,10 @@ typedef enum SwipSwapScreenMode {
 
 extern uint32_t gSwapScreenButtonCombo;
 extern uint32_t gSwapAudioButtonCombo;
+extern uint32_t gChangeScreenButtonCombo;
 extern bool gSwapScreenButtonComboEnabled;
 extern bool gChangeAudioModeButtonComboEnabled;
+extern bool gChangeScreenModeButtonComboEnabled;
 extern bool gEnabled;
 extern bool gShowNotifications;
 extern bool gNotificationModuleInitDone;

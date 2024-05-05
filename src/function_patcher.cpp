@@ -89,6 +89,22 @@ DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer,
     real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
 }
 
+const char *screenModeToStr(SwipSwapScreenMode mode) {
+    switch (mode) {
+        case SCREEN_MODE_NONE:
+            return "Screen mode: Normal";
+        case SCREEN_MODE_SWAP:
+            return "Screen mode: Swapping TV and GamePad";
+        case SCREEN_MODE_MIRROR_TV:
+            return "Screen mode: Mirror TV to GamePad";
+        case SCREEN_MODE_MIRROR_DRC:
+            return "Screen mode: Mirror GamePad to TV";
+        case SCREEN_MODE_MAX_VALUE:
+            break;
+    }
+    return "Invalid screen mode";
+}
+
 void SwapScreens() {
     if (gCurScreenMode == SCREEN_MODE_SWAP) {
         gCurScreenMode = SCREEN_MODE_NONE;
@@ -97,19 +113,28 @@ void SwapScreens() {
     }
 
     if (gShowNotifications && gNotificationModuleInitDone) {
-        if (gCurScreenMode) {
-            NotificationModule_AddInfoNotification("Swapping TV and GamePad screen");
-        } else {
-            NotificationModule_AddInfoNotification("Stop swapping TV and GamePad screen");
-        }
+        NotificationModule_AddInfoNotification(screenModeToStr(gCurScreenMode));
+    }
+}
+
+void ChangeScreens() {
+    auto val = (uint32_t) gCurScreenMode;
+    val++;
+    if (val >= SCREEN_MODE_MAX_VALUE) {
+        val = 0;
+    }
+    gCurScreenMode = static_cast<SwipSwapScreenMode>(val);
+    if (gShowNotifications && gNotificationModuleInitDone) {
+        NotificationModule_AddInfoNotification(screenModeToStr(gCurScreenMode));
     }
 }
 
 void SwapVoices();
 extern "C" uint32_t VPADGetButtonProcMode(VPADChan chan);
 
-static uint32_t sSwapScreenWasHoldForXFrameGamePad = 0;
-static uint32_t sSwapVoicesWasHoldForXFrameGamePad = 0;
+static uint32_t sSwapScreenWasHoldForXFrameGamePad   = 0;
+static uint32_t sChangeScreenWasHoldForXFrameGamePad = 0;
+static uint32_t sSwapVoicesWasHoldForXFrameGamePad   = 0;
 DECL_FUNCTION(int32_t, VPADRead, VPADChan chan, VPADStatus *buffer, uint32_t buffer_size, VPADReadError *error) {
     VPADReadError real_error;
     int32_t result = real_VPADRead(chan, buffer, buffer_size, &real_error);
@@ -132,6 +157,13 @@ DECL_FUNCTION(int32_t, VPADRead, VPADChan chan, VPADStatus *buffer, uint32_t buf
                                                                       sSwapScreenWasHoldForXFrameGamePad)) {
                 SwapScreens();
             }
+
+            if (gChangeScreenModeButtonComboEnabled && checkButtonComboVPAD(buffer,
+                                                                            checkFullBuffer ? result : 1,
+                                                                            gChangeScreenButtonCombo,
+                                                                            sChangeScreenWasHoldForXFrameGamePad)) {
+                ChangeScreens();
+            }
         }
     }
 
@@ -141,7 +173,7 @@ DECL_FUNCTION(int32_t, VPADRead, VPADChan chan, VPADStatus *buffer, uint32_t buf
     return result;
 }
 
-const char *modeToStr(SwipSwapAudioMode mode) {
+const char *audioModeToStr(SwipSwapAudioMode mode) {
     switch (mode) {
         case AUDIO_MODE_NONE:
             return "Audio mode: Normal";
@@ -167,7 +199,7 @@ void SwapVoices() {
     }
     gCurAudioMode = static_cast<SwipSwapAudioMode>(val);
     if (gShowNotifications && gNotificationModuleInitDone) {
-        NotificationModule_AddInfoNotification(modeToStr(gCurAudioMode));
+        NotificationModule_AddInfoNotification(audioModeToStr(gCurAudioMode));
     }
 }
 
