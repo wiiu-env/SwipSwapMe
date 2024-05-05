@@ -19,6 +19,8 @@ static void boolItemChangedConfig(ConfigItemBoolean *item, bool newValue) {
         gSwapScreenButtonComboEnabled = newValue;
     } else if (std::string_view(ENABLED_CHANGE_AUDIO_COMBO_CONFIG_STRING) == item->identifier) {
         gChangeAudioModeButtonComboEnabled = newValue;
+    } else if (std::string_view(ENABLED_CHANGE_SCREEN_COMBO_CONFIG_STRING) == item->identifier) {
+        gChangeScreenModeButtonComboEnabled = newValue;
     } else if (std::string_view(ENABLE_NOTIFICATIONS_CONFIG_STRING) == item->identifier) {
         gShowNotifications = newValue;
     } else {
@@ -41,6 +43,8 @@ static void buttonComboItemChanged(ConfigItemButtonCombo *item, uint32_t newValu
         gSwapScreenButtonCombo = newValue;
     } else if (std::string_view(CHANGE_AUDIO_BUTTON_COMBO_CONFIG_STRING) == item->identifier) {
         gSwapAudioButtonCombo = newValue;
+    } else if (std::string_view(CHANGE_SCREEN_BUTTON_COMBO_CONFIG_STRING) == item->identifier) {
+        gChangeScreenButtonCombo = newValue;
     } else {
         DEBUG_FUNCTION_LINE_WARN("Unexpected button combo item: %s", item->identifier);
         return;
@@ -117,13 +121,23 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
         auto buttonCombos = WUPSConfigCategory::Create("Button Combos");
 
         buttonCombos.add(WUPSConfigItemBoolean::Create(ENABLED_SWAP_SCREENS_COMBO_CONFIG_STRING,
-                                                       "Enable change swap screen button combo",
+                                                       "Enable swap screen button combo",
                                                        DEFAULT_ENABLED_SWAP_SCREENS_COMBO_CONFIG_VALUE, gSwapScreenButtonComboEnabled,
                                                        &boolItemChangedConfig));
 
         buttonCombos.add(WUPSConfigItemButtonCombo::Create(SWAP_SCREEN_BUTTON_COMBO_CONFIG_STRING,
                                                            "Swap screen",
                                                            DEFAULT_SWAP_SCREEN_BUTTON_COMBO_CONFIG_VALUE, gSwapScreenButtonCombo,
+                                                           &buttonComboItemChanged));
+
+        buttonCombos.add(WUPSConfigItemBoolean::Create(ENABLED_CHANGE_SCREEN_COMBO_CONFIG_STRING,
+                                                       "Enable change screen button combo",
+                                                       DEFAULT_ENABLED_CHANGE_SCREEN_COMBO_CONFIG_VALUE, gChangeScreenModeButtonComboEnabled,
+                                                       &boolItemChangedConfig));
+
+        buttonCombos.add(WUPSConfigItemButtonCombo::Create(CHANGE_SCREEN_BUTTON_COMBO_CONFIG_STRING,
+                                                           "Change screen",
+                                                           DEFAULT_CHANGE_SCREEN_BUTTON_COMBO_CONFIG_VALUE, gChangeScreenButtonCombo,
                                                            &buttonComboItemChanged));
 
         buttonCombos.add(WUPSConfigItemBoolean::Create(ENABLED_CHANGE_AUDIO_COMBO_CONFIG_STRING,
