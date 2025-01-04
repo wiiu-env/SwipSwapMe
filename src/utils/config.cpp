@@ -1,8 +1,12 @@
 #include "config.h"
-#include "WUPSConfigItemButtonCombo.h"
+
+#include "logger.h"
 #include "retain_vars.hpp"
-#include <map>
+
+#include <wups/config/WUPSConfigItemBoolean.h>
+#include <wups/config/WUPSConfigItemButtonCombo.h>
 #include <wups/config/WUPSConfigItemMultipleValues.h>
+#include <wups/storage.h>
 
 extern void UpdateAudioMode();
 
@@ -91,7 +95,6 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
                                                DEFAULT_ENABLE_NOTIFICATIONS_CONFIG_VALUE, gShowNotifications,
                                                &boolItemChangedConfig));
 
-
         constexpr WUPSConfigItemMultipleValues::ValuePair screenModeMap[] = {
                 {SCREEN_MODE_NONE, "Normal"},
                 {SCREEN_MODE_SWAP, "Swap TV and GamePad"},
@@ -127,7 +130,7 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
 
         buttonCombos.add(WUPSConfigItemButtonCombo::Create(SWAP_SCREEN_BUTTON_COMBO_CONFIG_STRING,
                                                            "Swap screen",
-                                                           DEFAULT_SWAP_SCREEN_BUTTON_COMBO_CONFIG_VALUE, gSwapScreenButtonCombo,
+                                                           DEFAULT_SWAP_SCREEN_BUTTON_COMBO_CONFIG_VALUE, gSwapScreenButtonComboHandle,
                                                            &buttonComboItemChanged));
 
         buttonCombos.add(WUPSConfigItemBoolean::Create(ENABLED_CHANGE_SCREEN_COMBO_CONFIG_STRING,
@@ -137,7 +140,7 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
 
         buttonCombos.add(WUPSConfigItemButtonCombo::Create(CHANGE_SCREEN_BUTTON_COMBO_CONFIG_STRING,
                                                            "Change screen",
-                                                           DEFAULT_CHANGE_SCREEN_BUTTON_COMBO_CONFIG_VALUE, gChangeScreenButtonCombo,
+                                                           DEFAULT_CHANGE_SCREEN_BUTTON_COMBO_CONFIG_VALUE, gChangeScreenButtonComboHandle,
                                                            &buttonComboItemChanged));
 
         buttonCombos.add(WUPSConfigItemBoolean::Create(ENABLED_CHANGE_AUDIO_COMBO_CONFIG_STRING,
@@ -147,7 +150,7 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
 
         buttonCombos.add(WUPSConfigItemButtonCombo::Create(CHANGE_AUDIO_BUTTON_COMBO_CONFIG_STRING,
                                                            "Change audio",
-                                                           DEFAULT_CHANGE_AUDIO_BUTTON_COMBO_CONFIG_VALUE, gSwapAudioButtonCombo,
+                                                           DEFAULT_CHANGE_AUDIO_BUTTON_COMBO_CONFIG_VALUE, gSwapAudioButtonComboHandle,
                                                            &buttonComboItemChanged));
         root.add(std::move(buttonCombos));
     } catch (std::exception &e) {
