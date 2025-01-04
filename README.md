@@ -33,15 +33,15 @@ Via the plugin config menu (press L, DPAD Down and Minus on the GamePad, Pro Con
 - **Button combos**
     - Enable swap screen button combo: (Default is true)
         - Determines if the screen can be swapped with a button combo.
-    - Swap screen: (Default is the "TV" button)
+    - Swap screen: (Default is the **"TV" button + DPAD left**)
         - Button combo to swap the TV and GamePad screen.
     - Enable swap change button combo: (Default is false)
         - Determines if the screen can be changed with a button combo.
-    - Change screen: (Default is "right stick button"/R3)
+    - Change screen: (Default is **TV Button + "right stick button"/R3**)
         - Button combo to change screen mode.
     - Enable change audio mode button combo: (Default is false)
         - Determines if the audio mode can be changed via a button combo.
-    - Change audio: (Default is "left stick button"/L3)
+    - Change audio: (Default is **TV Button + "left stick button"/L3**)
         - Button combo to change the audio mode.
 
 #### Audio Modes
