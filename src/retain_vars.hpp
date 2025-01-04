@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <wups/button_combo/defines.h>
 
 typedef enum SwipSwapAudioMode {
     AUDIO_MODE_NONE              = 0,
@@ -25,6 +26,11 @@ extern uint32_t gChangeScreenButtonCombo;
 extern bool gSwapScreenButtonComboEnabled;
 extern bool gChangeAudioModeButtonComboEnabled;
 extern bool gChangeScreenModeButtonComboEnabled;
+
+extern WUPSButtonCombo_ComboHandle gSwapScreenButtonComboHandle;
+extern WUPSButtonCombo_ComboHandle gSwapAudioButtonComboHandle;
+extern WUPSButtonCombo_ComboHandle gChangeScreenButtonComboHandle;
+
 extern bool gEnabled;
 extern bool gShowNotifications;
 extern bool gNotificationModuleInitDone;
