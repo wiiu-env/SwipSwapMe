@@ -241,7 +241,8 @@ WUPSButtonCombo_ComboHandle RegisterButtonCombo(const std::string_view label, co
                                                                                   buttonCombo,
                                                                                   callback,
                                                                                   nullptr,
-                                                                                  status, err);
+                                                                                  status,
+                                                                                  err);
     if (!res || err != WUPS_BUTTON_COMBO_ERROR_SUCCESS) {
         const std::string errorMsg = string_format("SwipSwapMe: Failed to register button combo \"%s\"", label.data());
         DEBUG_FUNCTION_LINE_ERR("%s", errorMsg.c_str());
@@ -267,15 +268,17 @@ WUPSButtonCombo_ComboHandle RegisterButtonCombo(const std::string_view label, co
 INITIALIZE_PLUGIN() {
     initLogging();
 
-    NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_INFO, NOTIFICATION_MODULE_DEFAULT_OPTION_KEEP_UNTIL_SHOWN, true);
-    NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_INFO, NOTIFICATION_MODULE_DEFAULT_OPTION_DURATION_BEFORE_FADE_OUT, 20.0f);
-
     if (NotificationModule_InitLibrary() == NOTIFICATION_MODULE_RESULT_SUCCESS) {
         gNotificationModuleInitDone = true;
     } else {
         gNotificationModuleInitDone = false;
         DEBUG_FUNCTION_LINE_ERR("Failed to init notification lib");
     }
+
+    NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_INFO, NOTIFICATION_MODULE_DEFAULT_OPTION_KEEP_UNTIL_SHOWN, true);
+    NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_INFO, NOTIFICATION_MODULE_DEFAULT_OPTION_DURATION_BEFORE_FADE_OUT, 15.0f);
+    NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_ERROR, NOTIFICATION_MODULE_DEFAULT_OPTION_KEEP_UNTIL_SHOWN, true);
+    NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_ERROR, NOTIFICATION_MODULE_DEFAULT_OPTION_DURATION_BEFORE_FADE_OUT, 15.0f);
 
     gCurScreenMode           = DEFAULT_SCREEN_MODE_CONFIG_VALUE;                // migrateStorage might override this
     gSwapScreenButtonCombo   = DEFAULT_SWAP_SCREEN_BUTTON_COMBO_CONFIG_VALUE;   // migrateStorage might override this
@@ -329,10 +332,12 @@ INITIALIZE_PLUGIN() {
         DEBUG_FUNCTION_LINE_ERR("Failed to init config api");
     }
 
-    deinitLogging();
-
     NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_INFO, NOTIFICATION_MODULE_DEFAULT_OPTION_DURATION_BEFORE_FADE_OUT, 2.0f);
     NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_INFO, NOTIFICATION_MODULE_DEFAULT_OPTION_KEEP_UNTIL_SHOWN, false);
+    NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_ERROR, NOTIFICATION_MODULE_DEFAULT_OPTION_DURATION_BEFORE_FADE_OUT, 2.0f);
+    NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_ERROR, NOTIFICATION_MODULE_DEFAULT_OPTION_KEEP_UNTIL_SHOWN, false);
+
+    deinitLogging();
 }
 
 DEINITIALIZE_PLUGIN() {
