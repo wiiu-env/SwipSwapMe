@@ -332,6 +332,16 @@ INITIALIZE_PLUGIN() {
         DEBUG_FUNCTION_LINE_ERR("Failed to init config api");
     }
 
+    if (gEnabled && gShowNotifications && gNotificationModuleInitDone) {
+        NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_INFO, NOTIFICATION_MODULE_DEFAULT_OPTION_DURATION_BEFORE_FADE_OUT, 5.0f);
+        if (gCurScreenMode != SCREEN_MODE_NONE) {
+            NotificationModule_AddInfoNotification(screenModeToStr(gCurScreenMode));
+        }
+        if (gCurAudioMode != AUDIO_MODE_NONE) {
+            NotificationModule_AddInfoNotification(audioModeToStr(gCurAudioMode));
+        }
+    }
+
     NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_INFO, NOTIFICATION_MODULE_DEFAULT_OPTION_DURATION_BEFORE_FADE_OUT, 2.0f);
     NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_INFO, NOTIFICATION_MODULE_DEFAULT_OPTION_KEEP_UNTIL_SHOWN, false);
     NotificationModule_SetDefaultValue(NOTIFICATION_MODULE_NOTIFICATION_TYPE_ERROR, NOTIFICATION_MODULE_DEFAULT_OPTION_DURATION_BEFORE_FADE_OUT, 2.0f);
