@@ -223,7 +223,7 @@ DECL_FUNCTION(void, AXUpdateDeviceModes2) {
 }
 
 DECL_FUNCTION(uint32_t, AVMGetTVAudioMode, uint32_t *mode) {
-    auto res = real_AVMGetTVAudioMode(mode);
+    const auto res = real_AVMGetTVAudioMode(mode);
     if (!gEnabled) {
         return res;
     }
