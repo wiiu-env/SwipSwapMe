@@ -33,7 +33,7 @@ Via the plugin config menu (press L, DPAD Down and Minus on the GamePad, Pro Con
 - **Button combos**
     - Enable swap screen button combo: (Default is true)
         - Determines if the screen can be swapped with a button combo.
-    - Swap screen: (Default is the **"TV" button + DPAD left**)
+    - Swap screen: (Default is the **"TV" button + DPAD right**)
         - Button combo to swap the TV and GamePad screen.
     - Enable swap change button combo: (Default is false)
         - Determines if the screen can be changed with a button combo.
