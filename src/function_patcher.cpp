@@ -147,7 +147,7 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
                     }
                     addr[i] = (int16_t) val;
                     // Combine right channel of TV and DRC
-                    val = (((int32_t) TVCopy[i] + (int32_t) DRCCopy[i]) >> 1);
+                    val = (((int32_t) TVCopy[i + 1] + (int32_t) DRCCopy[i + 1]) >> 1);
                     if (val > 0x7FFF) {
                         val = 0x7FFF;
                     } else if (val < -0x8000) {
