@@ -89,8 +89,8 @@ DECL_FUNCTION(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer,
     real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
 }
 
-int16_t DRCCopy[0x120] = {};
-int16_t TVCopy[0x120]  = {};
+static int16_t sDRCCopy[0x120] = {};
+static int16_t sTVCopy[0x120]  = {};
 typedef void (*AIInitDMAfn)(int16_t *addr, uint32_t size);
 void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFunc, AIInitDMAfn otherFunc) {
     auto sizeCpy = size > 576 ? 576 : size;
@@ -112,14 +112,14 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
                 case SCREEN_MODE_MIRROR_TV:
                 case SCREEN_MODE_MIRROR_DRC: {
                     if (isDRC) {
-                        memcpy(DRCCopy, addr, sizeCpy);
+                        memcpy(sDRCCopy, addr, sizeCpy);
                     } else {
-                        memcpy(TVCopy, addr, sizeCpy);
+                        memcpy(sTVCopy, addr, sizeCpy);
                     }
                     if (gCurScreenMode == SCREEN_MODE_MIRROR_TV) {
-                        memcpy(addr, TVCopy, sizeCpy);
+                        memcpy(addr, sTVCopy, sizeCpy);
                     } else if (gCurScreenMode == SCREEN_MODE_MIRROR_DRC) {
-                        memcpy(addr, DRCCopy, sizeCpy);
+                        memcpy(addr, sDRCCopy, sizeCpy);
                     }
                     break;
                 }
@@ -132,14 +132,14 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
         case AUDIO_MODE_COMBINE:
         case AUDIO_MODE_LEFT_TV_RIGHT_DRC: {
             if (isDRC) {
-                memcpy(DRCCopy, addr, sizeCpy);
+                memcpy(sDRCCopy, addr, sizeCpy);
             } else {
-                memcpy(TVCopy, addr, sizeCpy);
+                memcpy(sTVCopy, addr, sizeCpy);
             }
             if (gCurAudioMode == AUDIO_MODE_COMBINE) {
                 for (uint32_t i = 0; i < 0x120; i += 2) {
                     // Combine left channel of TV and DRC
-                    auto val = (((int32_t) TVCopy[i] + (int32_t) DRCCopy[i]) >> 1);
+                    auto val = (((int32_t) sTVCopy[i] + (int32_t) sDRCCopy[i]) >> 1);
                     if (val > 0x7FFF) {
                         val = 0x7FFF;
                     } else if (val < -0x8000) {
@@ -147,7 +147,7 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
                     }
                     addr[i] = (int16_t) val;
                     // Combine right channel of TV and DRC
-                    val = (((int32_t) TVCopy[i + 1] + (int32_t) DRCCopy[i + 1]) >> 1);
+                    val = (((int32_t) sTVCopy[i + 1] + (int32_t) sDRCCopy[i + 1]) >> 1);
                     if (val > 0x7FFF) {
                         val = 0x7FFF;
                     } else if (val < -0x8000) {
@@ -158,7 +158,7 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
             } else if (gCurAudioMode == AUDIO_MODE_LEFT_TV_RIGHT_DRC) {
                 for (uint32_t i = 0; i < 0x120; i += 2) {
                     // Mix down TV to MONO and put it in the left channel
-                    auto val = (((int32_t) TVCopy[i] + (int32_t) TVCopy[i + 1]) >> 1);
+                    auto val = (((int32_t) sTVCopy[i] + (int32_t) sTVCopy[i + 1]) >> 1);
                     if (val > 0x7FFF) {
                         val = 0x7FFF;
                     } else if (val < -0x8000) {
@@ -166,7 +166,7 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
                     }
                     addr[i + 1] = (int16_t) val;
                     // Mix down DRC to MONO and put it in the right channel
-                    val = (((int32_t) DRCCopy[i] + (int32_t) DRCCopy[i + 1]) >> 1);
+                    val = (((int32_t) sDRCCopy[i] + (int32_t) sDRCCopy[i + 1]) >> 1);
                     if (val > 0x7FFF) {
                         val = 0x7FFF;
                     } else if (val < -0x8000) {
