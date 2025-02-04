@@ -164,7 +164,7 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
                     } else if (val < -0x8000) {
                         val = 0x8000;
                     }
-                    addr[i] = (int16_t) val;
+                    addr[i + 1] = (int16_t) val;
                     // Mix down DRC to MONO and put it in the right channel
                     val = (((int32_t) DRCCopy[i] + (int32_t) DRCCopy[i + 1]) >> 1);
                     if (val > 0x7FFF) {
@@ -172,7 +172,7 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
                     } else if (val < -0x8000) {
                         val = 0x8000;
                     }
-                    addr[i + 1] = (int16_t) val;
+                    addr[i] = (int16_t) val;
                 }
             }
             break;
