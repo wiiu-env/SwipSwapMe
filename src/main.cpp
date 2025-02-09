@@ -337,7 +337,7 @@ INITIALIZE_PLUGIN() {
         if (gCurScreenMode != SCREEN_MODE_NONE) {
             NotificationModule_AddInfoNotification(screenModeToStr(gCurScreenMode));
         }
-        if (gCurAudioMode != AUDIO_MODE_NONE) {
+        if (gCurAudioMode != AUDIO_MODE_NONE && gCurAudioMode != AUDIO_MODE_MATCH_SCREEN) {
             NotificationModule_AddInfoNotification(audioModeToStr(gCurAudioMode));
         }
     }
