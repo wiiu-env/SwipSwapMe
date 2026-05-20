@@ -5,6 +5,7 @@
 
 #include <wups/config/WUPSConfigItemBoolean.h>
 #include <wups/config/WUPSConfigItemButtonCombo.h>
+#include <wups/config/WUPSConfigItemIntegerRange.h>
 #include <wups/config/WUPSConfigItemMultipleValues.h>
 #include <wups/storage.h>
 
@@ -82,6 +83,26 @@ static void multiItemChanged(ConfigItemMultipleValues *item, uint32_t newValue) 
     }
 }
 
+void integerRangeItemChanged(ConfigItemIntegerRange *item, int newValue) {
+    if (!item || !item->identifier) {
+        DEBUG_FUNCTION_LINE_WARN("Invalid item or identifier in integer rangeitem callback");
+        return;
+    }
+    DEBUG_FUNCTION_LINE_VERBOSE("New value in %s changed: %d", item->identifier, newValue);
+
+    if (std::string_view(TV_AUDIO_WEIGHT_CONFIG_STRING) == item->identifier) {
+        tvWeightRatio = newValue;
+    } else {
+        DEBUG_FUNCTION_LINE_WARN("Unexpected integer range item: %s", item->identifier);
+        return;
+    }
+
+    WUPSStorageError err;
+    if ((err = WUPSStorageAPI::Store(item->identifier, newValue)) != WUPS_STORAGE_ERROR_SUCCESS) {
+        DEBUG_FUNCTION_LINE_WARN("Failed to store value %d to storage item \"%s\": %s (%d)", newValue, item->identifier, WUPSStorageAPI_GetStatusStr(err), err);
+    }
+}
+
 WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle rootHandle) {
     try {
         WUPSConfigCategory root = WUPSConfigCategory(rootHandle);
@@ -120,6 +141,12 @@ WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle ro
                                                                DEFAULT_AUDIO_MODE_CONFIG_VALUE, gCurAudioMode,
                                                                audioModeMap,
                                                                &multiItemChanged));
+
+        root.add(WUPSConfigItemIntegerRange::Create(TV_AUDIO_WEIGHT_CONFIG_STRING,
+                                                    "TV/GamePad mix when combining audio [-10, 10]:",
+                                                    DEFAULT_TV_AUDIO_WEIGHT_CONFIG_VALUE, tvWeightRatio,
+                                                    -10, 10,
+                                                    &integerRangeItemChanged));
 
         auto buttonCombos = WUPSConfigCategory::Create("Button Combos");
 

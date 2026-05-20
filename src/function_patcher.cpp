@@ -138,8 +138,9 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
             }
             if (gCurAudioMode == AUDIO_MODE_COMBINE) {
                 for (uint32_t i = 0; i < 0x120; i += 2) {
+                    const float tvWeight = (tvWeightRatio + 10) / 20.0f;
                     // Combine left channel of TV and DRC
-                    auto val = (((int32_t) sTVCopy[i] + (int32_t) sDRCCopy[i]) >> 1);
+                    auto val = (int32_t) (((int32_t) sTVCopy[i]) * tvWeight + ((int32_t) sDRCCopy[i]) * (1.0f - tvWeight)) >> 1;
                     if (val > 0x7FFF) {
                         val = 0x7FFF;
                     } else if (val < -0x8000) {
@@ -147,7 +148,7 @@ void DoAudioMagic(int16_t *addr, uint32_t size, bool isDRC, AIInitDMAfn targetFu
                     }
                     addr[i] = (int16_t) val;
                     // Combine right channel of TV and DRC
-                    val = (((int32_t) sTVCopy[i + 1] + (int32_t) sDRCCopy[i + 1]) >> 1);
+                    val = (int32_t) (((int32_t) sTVCopy[i + 1]) * tvWeight + ((int32_t) sDRCCopy[i + 1]) * (1.0f - tvWeight)) >> 1;
                     if (val > 0x7FFF) {
                         val = 0x7FFF;
                     } else if (val < -0x8000) {
