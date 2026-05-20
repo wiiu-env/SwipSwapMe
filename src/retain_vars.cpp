@@ -17,5 +17,6 @@ bool gShowNotifications                                    = DEFAULT_ENABLE_NOTI
 
 SwipSwapScreenMode gCurScreenMode = DEFAULT_SCREEN_MODE_CONFIG_VALUE;
 SwipSwapAudioMode gCurAudioMode   = DEFAULT_AUDIO_MODE_CONFIG_VALUE;
+int32_t tvWeightRatio             = DEFAULT_TV_AUDIO_WEIGHT_CONFIG_VALUE;
 
 bool gNotificationModuleInitDone = true;

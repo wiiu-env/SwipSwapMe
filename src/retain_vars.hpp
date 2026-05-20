@@ -37,3 +37,4 @@ extern bool gNotificationModuleInitDone;
 
 extern SwipSwapScreenMode gCurScreenMode;
 extern SwipSwapAudioMode gCurAudioMode;
+extern int32_t tvWeightRatio;

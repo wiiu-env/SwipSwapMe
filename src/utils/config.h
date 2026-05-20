@@ -14,6 +14,7 @@
 
 #define DEFAULT_SCREEN_MODE_CONFIG_VALUE                    SCREEN_MODE_NONE
 #define DEFAULT_AUDIO_MODE_CONFIG_VALUE                     AUDIO_MODE_MATCH_SCREEN
+#define DEFAULT_TV_AUDIO_WEIGHT_CONFIG_VALUE                0
 
 #define ENABLED_CONFIG_STRING                               "enabled"
 #define SWAP_SCREENS_CONFIG_STRING_DEPRECATED               "swapScreens"
@@ -29,6 +30,7 @@
 #define CHANGE_SCREEN_BUTTON_COMBO_CONFIG_STRING            "screenChangeButtonComboNew"
 #define CHANGE_AUDIO_BUTTON_COMBO_CONFIG_STRING             "audioButtonComboNew"
 #define AUDIO_MODE_CONFIG_STRING                            "audioMode"
+#define TV_AUDIO_WEIGHT_CONFIG_STRING                       "tvAudioWeight"
 
 
 WUPSConfigAPICallbackStatus ConfigMenuOpenedCallback(WUPSConfigCategoryHandle rootHandle);

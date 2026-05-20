@@ -318,6 +318,9 @@ INITIALIZE_PLUGIN() {
     if ((err = WUPSStorageAPI::GetOrStoreDefault(AUDIO_MODE_CONFIG_STRING, gCurAudioMode, DEFAULT_AUDIO_MODE_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
         DEBUG_FUNCTION_LINE_ERR("Failed to get or create item \"%s\": %s (%d)", AUDIO_MODE_CONFIG_STRING, WUPSStorageAPI_GetStatusStr(err), err);
     }
+    if ((err = WUPSStorageAPI::GetOrStoreDefault(TV_AUDIO_WEIGHT_CONFIG_STRING, tvWeightRatio, DEFAULT_TV_AUDIO_WEIGHT_CONFIG_VALUE)) != WUPS_STORAGE_ERROR_SUCCESS) {
+        DEBUG_FUNCTION_LINE_ERR("Failed to get or create item \"%s\": %s (%d)", TV_AUDIO_WEIGHT_CONFIG_STRING, WUPSStorageAPI_GetStatusStr(err), err);
+    }
 
     if ((err = WUPSStorageAPI::SaveStorage()) != WUPS_STORAGE_ERROR_SUCCESS) {
         DEBUG_FUNCTION_LINE_ERR("Failed to save storage: %s (%d)", WUPSStorageAPI_GetStatusStr(err), err);
@@ -372,6 +375,10 @@ ON_APPLICATION_START() {
 ON_APPLICATION_REQUESTS_EXIT() {
     if (sAudioModeAtStart != gCurAudioMode || sScreenModeAtStart != gCurScreenMode) {
         WUPSStorageError err;
+        if ((err = WUPSStorageAPI::Store(TV_AUDIO_WEIGHT_CONFIG_STRING, tvWeightRatio)) != WUPS_STORAGE_ERROR_SUCCESS) {
+            DEBUG_FUNCTION_LINE_ERR("Failed to store TV audio weight to storage: %s (%d)", WUPSStorageAPI_GetStatusStr(err), err);
+        }
+
         if ((err = WUPSStorageAPI::Store(AUDIO_MODE_CONFIG_STRING, gCurAudioMode)) != WUPS_STORAGE_ERROR_SUCCESS) {
             DEBUG_FUNCTION_LINE_ERR("Failed to store audio mode to storage: %s (%d)", WUPSStorageAPI_GetStatusStr(err), err);
         }
